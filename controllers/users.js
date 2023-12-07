@@ -23,7 +23,7 @@ module.exports.getUserById = (req, res) => {
         res.status(STATUS_CODE_BAD_REQUEST).send({ message: 'Неккорктный ID' });
         return;
       }
-      res.status(STATUS_CODE.SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+      res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
