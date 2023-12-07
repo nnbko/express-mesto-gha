@@ -25,7 +25,7 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use((req, res) => {
-  res.status(STATUS_CODE_NOT_FOUND).json({ message: 'Тут ничего нет :(' });
+  res.status(STATUS_CODE_NOT_FOUND).send({ message: 'Тут ничего нет' });
 });
 
 
