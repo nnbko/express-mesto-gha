@@ -35,7 +35,7 @@ module.exports.deleteCard = (req, res) => {
                 res.status(STATUS_CODE_BAD_REQUEST).send({ message: 'Неккорктный ID' });
                 return;
             }
-            res.status(STATUS_CODE.SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+            res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
         });
 };
 
@@ -57,7 +57,7 @@ module.exports.addLike = (req, res) => {
                 res.status(STATUS_CODE_BAD_REQUEST).send({ message: 'Неккорктный ID' });
                 return;
             }
-            res.status(STATUS_CODE.SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+            res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
         });
 };
 
@@ -70,7 +70,7 @@ module.exports.removeLike = (req, res) => {
     )
         .then((card) => {
             if (!card) {
-                return res.send({ message: `Карточка не найдена.` });
+                return res.status(STATUS_CODE_NOT_FOUND).send({ message: `Карточка не найдена.` });
             }
             return res.send({ data: card });
         })
@@ -79,7 +79,7 @@ module.exports.removeLike = (req, res) => {
                 res.status(STATUS_CODE_BAD_REQUEST).send({ message: 'Неккорктный ID' });
                 return;
             }
-            res.status(STATUS_CODE.SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+            res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
         });
 };
 
