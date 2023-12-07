@@ -46,7 +46,7 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUserData = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .then((user) => res.status(STATUS_CODE_CREATED).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(STATUS_CODE_BAD_REQUEST).send({ message: "Неккоректные данные" });

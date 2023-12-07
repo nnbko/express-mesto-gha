@@ -48,7 +48,7 @@ module.exports.addLike = (req, res) => {
     )
         .then((card) => {
             if (!card) {
-                return res.status(STATUS_CODE_BAD_REQUEST).send({ message: `Карточка не найдена.` });
+                return res.status(STATUS_CODE_NOT_FOUND).send({ message: `Карточка не найдена.` });
             }
             return res.send({ data: card });
         })
