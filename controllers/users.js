@@ -5,7 +5,7 @@ const { STATUS_CODE_CREATED, STATUS_CODE_BAD_REQUEST, STATUS_CODE_NOT_FOUND, STA
 module.exports.getUsers = (req, res) => {
   User.find()
     .then((users) => { res.send({ data: users }); })
-    .catch(() => res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.getUserById = (req, res) => {
