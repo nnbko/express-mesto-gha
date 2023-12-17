@@ -30,7 +30,7 @@ app.use('*', (req, res, next) => {
   next(new Error_NotFound('Тут ничего нет'));
 });
 
-app.use(errors());
+//app.use(errors());
 app.use(errorHandler);
 
 

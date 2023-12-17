@@ -1,5 +1,6 @@
-module.exports = (err, req, res, next) => {
+module.exports = (err, res, next) => {
   const statusCode = err.statusCode
+  res
     .status(statusCode)
     .send({
       message:
@@ -7,4 +8,5 @@ module.exports = (err, req, res, next) => {
           ? "На сервере ошибка"
           : err.message,
     });
+  next();
 };
