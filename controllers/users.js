@@ -5,7 +5,6 @@ const Error_NotFound = require('../constants/Erorr_NotFound');
 const Error_Server = require('../constants/Error_Server');
 const Error_BadRequest = require('../constants/Error_BadRequest');
 const Error_Conflict = require('../constants/Error_Conflict');
-const Error_Unauthorized = require('../constants/Error_Unauthorized');
 
 const MONGODB_DUPLICATE_ERROR_CODE = 11000;
 
