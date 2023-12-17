@@ -25,24 +25,27 @@ module.exports.createCard = (req, res, next) => {
     });
 };
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId)
+  const { cardId } = req.params;
+  const userId = req.user._id;
+  Card.findById(cardId)
     .then((card) => {
-      if (card.owner.toString() !== req.user._id) {
-        return next(new Error_BadRequest('Вы не можете удалить эту карточку!'));
+      if (!card) {
+        return next(new Error_NotFound('Карточка не найдена'));
       }
-      Card.findByIdAndDelete(req.params.cardId)
-        .then((card) => {
-          if (!card) {
-            return next(new Error_Forbidden('Вы не можете удалить эту карточку!'));
-          }
-          return res.send({ message: `Карточка удалена` });
+      if (card.owner.toString() !== userId) {
+        return next(new Error_Forbidden('Вы не можете удалить эту карточку'));
+      }
+      Card.findByIdAndDelete(cardId)
+        .then(() => {
+         res.status(200).send({ data: card });
         })
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new Error_BadRequest('Неккорктный ID'));
       }
-      return next(new Error_Server('На сервере произошла ошибка'));
+      next(err);
     });
 };
 module.exports.addLike = (req, res, next) => {
@@ -54,7 +57,7 @@ module.exports.addLike = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return next(new Error_Forbidden('Карточка не найдена.'));
+        return next(new Error_NotFound('Карточка не найдена.'));
       }
       return res.send({ data: card });
     })
@@ -75,7 +78,7 @@ module.exports.removeLike = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return next(new Error_Forbidden('Карточка не найдена.'));
+        return next(new Error_NotFound('Карточка не найдена.'));
       }
       return res.send({ data: card });
     })
