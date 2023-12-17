@@ -3,7 +3,6 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const auth = require('./middlewares/auth');
 const { errors } = require('celebrate');
-const { validate_Login, validate_CreateUser } = require('./utils/validation');
 const Error_NotFound = require('./constants/Erorr_NotFound');
 const errorHandler = require('./middlewares/errorHandler');
 
