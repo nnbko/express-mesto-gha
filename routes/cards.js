@@ -1,14 +1,15 @@
+/* eslint-disable eol-last */
 const router = require('express').Router();
-const { validate_CreateCard, validate_CardId } = require('../utils/validation');
+const { validateCreateCard, validateCardId } = require('../utils/validation');
 
 const {
   getCards, createCard, deleteCard, addLike, removeLike,
 } = require('../controllers/cards');
 
 router.get('/', getCards);
-router.post('/', validate_CreateCard, createCard);
-router.delete('/:cardId', validate_CardId, deleteCard);
-router.put('/:cardId/likes', validate_CardId, addLike);
-router.delete('/:cardId/likes', validate_CardId, removeLike);
+router.post('/', validateCreateCard, createCard);
+router.delete('/:cardId', validateCardId, deleteCard);
+router.put('/:cardId/likes', validateCardId, addLike);
+router.delete('/:cardId/likes', validateCardId, removeLike);
 
 module.exports = router;
