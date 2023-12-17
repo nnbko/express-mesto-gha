@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const auth = require('./middlewares/auth');
 const { errors } = require('celebrate');
+const { validate_Login, validate_CreateUser } = require('./utils/validation');
 const Error_NotFound = require('./constants/Erorr_NotFound');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -19,8 +20,8 @@ mongoose.connect("mongodb://127.0.0.1:27017/mestodb", {
   useUnifiedTopology: true,
 });
 app.use(cookieParser());
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', validate_Login, login);
+app.post('/signup', validate_CreateUser, createUser);
 app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
