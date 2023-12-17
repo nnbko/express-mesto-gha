@@ -5,12 +5,12 @@ const Error_BadRequest = require('../constants/Error_BadRequest');
 const Error_Forbidden = require('../constants/Error_Forbidden');
 
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find()
     .then((cards) => { res.send({ data: cards }); })
     .catch(next);
 };
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
@@ -24,7 +24,7 @@ module.exports.createCard = (req, res) => {
 
     });
 };
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
@@ -45,7 +45,7 @@ module.exports.deleteCard = (req, res) => {
       return next(new Error_Server('На сервере произошла ошибка'));
     });
 };
-module.exports.addLike = (req, res) => {
+module.exports.addLike = (req, res, next) => {
   const { cardId } = req.params;
   Card.findByIdAndUpdate(
     cardId,
@@ -66,7 +66,7 @@ module.exports.addLike = (req, res) => {
     });
 };
 
-module.exports.removeLike = (req, res) => {
+module.exports.removeLike = (req, res, next) => {
   const { cardId } = req.params;
   Card.findByIdAndUpdate(
     cardId,

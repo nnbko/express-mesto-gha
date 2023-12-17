@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const Error_NotFound = require('../constants/Erorr_NotFound');
+const  Error_NotFound= require('../constants/Erorr_NotFound');
 const Error_Server = require('../constants/Error_Server');
 const Error_BadRequest = require('../constants/Error_BadRequest');
 const Error_Conflict = require('../constants/Error_Conflict');
@@ -8,7 +9,7 @@ const Error_Unauthorized = require('../constants/Error_Unauthorized');
 
 const MONGODB_DUPLICATE_ERROR_CODE = 11000;
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find()
     .then((users) => { res.status(200).send({ data: users }); })
     .catch(next);
@@ -18,13 +19,13 @@ module.exports.getUser = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        return next(new ErrorNotFound('Запрашиваемый пользователь не найден'));
+        return next(new Error_NotFound('Запрашиваемый пользователь не найден'));
       }
       res.send(user);
     })
     .catch(next);
 };
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   const { userId } = req.params;
   User.findById(userId)
     .then((user) => {
@@ -42,7 +43,7 @@ module.exports.getUserById = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({ name, about, avatar, email, password: hash }))
@@ -50,7 +51,7 @@ module.exports.createUser = (req, res) => {
       res.status(201).send({ data: user });
     })
     .catch((err) => {
-      if (error.code === MONGODB_DUPLICATE_ERROR_CODE) {
+      if (err.code === MONGODB_DUPLICATE_ERROR_CODE) {
         return next(new Error_Conflict('Пользователь с такой почтой уже существует'));
       }
       if (err.name === 'ValidationError') {
@@ -63,7 +64,7 @@ module.exports.createUser = (req, res) => {
 
 
 
-module.exports.updateUserData = (req, res) => {
+module.exports.updateUserData = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send(user))
@@ -74,7 +75,7 @@ module.exports.updateUserData = (req, res) => {
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const userId = req.user._id;
 
@@ -88,7 +89,7 @@ module.exports.updateUserAvatar = (req, res) => {
     });
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res, next, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {

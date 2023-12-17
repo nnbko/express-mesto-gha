@@ -3,9 +3,9 @@ const { validate_UserId, validate_UpadteUser, validate_UpdateAvatar } = require(
 const {
   getUsers,
   getUserById,
-  createUser,
   updateUserData,
-  updateUserAvatar
+  updateUserAvatar,
+  getUser
 } = require('../controllers/users');
 
 router.get('/', getUsers);

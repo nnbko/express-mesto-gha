@@ -4,7 +4,6 @@ const auth = require('./middlewares/auth');
 const { errors } = require('celebrate');
 const { validate_Login, validate_CreateUser } = require('./utils/validation');
 const Error_NotFound = require('./constants/Erorr_NotFound');
-const Error_Server = require('./constants/Error_Server');
 
 const { login, createUser } = require('./controllers/users');
 
@@ -30,7 +29,7 @@ app.use('*', (req, res, next) => {
 });
 
 app.use(errors());
-app.use(Error_Server);
+
 
 
 app.listen(PORT);
