@@ -20,8 +20,8 @@ mongoose.connect("mongodb://127.0.0.1:27017/mestodb", {
   useUnifiedTopology: true,
 });
 app.use(cookieParser());
-app.post('/signin', validate_Login, login);
-app.post('/signup', validate_CreateUser, createUser);
+app.post('/signin', login);
+app.post('/signup', createUser);
 app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
