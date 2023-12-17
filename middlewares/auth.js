@@ -12,8 +12,7 @@ module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    next(new Error_Unauthorized('Необходима авторизация'));
-    return;
+    return next(new Error_Unauthorized('Необходима авторизация'));
   }
 
   const token = extractBearerToken(authorization);
@@ -22,8 +21,8 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'super-strong-secret');
   } catch (err) {
-    next(new Error_Unauthorized('Необходима авторизация'));
-    return;
+    return next(new Error_Unauthorized('Необходима авторизация'));
+
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
