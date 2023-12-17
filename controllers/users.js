@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const  Error_NotFound= require('../constants/Erorr_NotFound');
+const Error_NotFound = require('../constants/Erorr_NotFound');
 const Error_Server = require('../constants/Error_Server');
 const Error_BadRequest = require('../constants/Error_BadRequest');
 const Error_Conflict = require('../constants/Error_Conflict');
@@ -100,5 +100,5 @@ module.exports.login = (req, res, next, next) => {
       res.cookie('jwt', token, { httpOnly: true, maxAge: 7 * 24 * 360000 });
       res.send({ token });
     })
-
+    .catch(next);
 };
