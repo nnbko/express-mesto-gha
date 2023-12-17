@@ -1,42 +1,62 @@
-
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { STATUS_CODE_CREATED, STATUS_CODE_BAD_REQUEST, STATUS_CODE_NOT_FOUND, STATUS_CODE_SERVER_ERROR } = require('../constants/constants')
+const Error_NotFound = require('../constants/Erorr_NotFound');
+const Error_Server = require('../constants/Error_Server');
+const Error_BadRequest = require('../constants/Error_BadRequest');
+const Error_Conflict = require('../constants/Error_Conflict');
+const Error_Unauthorized = require('../constants/Error_Unauthorized');
+
+const MONGODB_DUPLICATE_ERROR_CODE = 11000;
 
 module.exports.getUsers = (req, res) => {
   User.find()
-    .then((users) => { res.send({ data: users }); })
-    .catch(() => res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
+    .then((users) => { res.status(200).send({ data: users }); })
+    .catch(next);
 };
-
+module.exports.getUser = (req, res, next) => {
+  const userId = req.user._id;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return next(new ErrorNotFound('Запрашиваемый пользователь не найден'));
+      }
+      res.send(user);
+    })
+    .catch(next);
+};
 module.exports.getUserById = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        res.status(STATUS_CODE_NOT_FOUND).send({ message: 'Пользователь не найден' });
+        return next(new Error_NotFound('Пользователь не найден'));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(STATUS_CODE_BAD_REQUEST).send({ message: 'Неккорктный ID' });
-        return;
+        return next(new Error_BadRequest('Неккорктный ID'));
       }
-      res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+      return next(new Error_Server('На сервере произошла ошибка'));
     });
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.status(STATUS_CODE_CREATED).send({ data: user }))
+  const { name, about, avatar, email, password } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({ name, about, avatar, email, password: hash }))
+    .then((user) => {
+      res.status(201).send({ data: user });
+    })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(STATUS_CODE_BAD_REQUEST).send({ message: "Неккоректные данные" });
-      } else {
-        res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+      if (error.code === MONGODB_DUPLICATE_ERROR_CODE) {
+        return next(new Error_Conflict('Пользователь с такой почтой уже существует'));
       }
+      if (err.name === 'ValidationError') {
+        return next(new Error_BadRequest('Переданы некорректные данные '));
+      }
+      return next(new Error_Server('На сервере произошла ошибка'));
     });
 };
 
@@ -49,9 +69,7 @@ module.exports.updateUserData = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(STATUS_CODE_BAD_REQUEST).send({ message: "Неккоректные данные" });
-      } else {
-        res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+        return next(new Error_BadRequest('Переданы некорректные данные'));
       }
     });
 };
@@ -65,10 +83,21 @@ module.exports.updateUserAvatar = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(STATUS_CODE_BAD_REQUEST).send({ message: "Неккоректные данные" });
-      } else {
-        res.status(STATUS_CODE_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+        return next(new Error_BadRequest('Переданы некорректные данные'));
       }
     });
 };
 
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      if (!user) {
+        return next(new Error_Unauthorized('Неправильные почта или пароль'));
+      }
+      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' })
+      res.cookie('jwt', token, { httpOnly: true, maxAge: 7 * 24 * 360000 });
+      res.send({ token });
+    })
+
+};
