@@ -93,9 +93,6 @@ module.exports.login = (req, res, next, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return next(new Error_Unauthorized('Неправильные почта или пароль'));
-      }
       const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' })
       res.cookie('jwt', token, { httpOnly: true, maxAge: 7 * 24 * 360000 });
       res.send({ token });
